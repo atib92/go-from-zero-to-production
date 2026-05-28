@@ -8,6 +8,15 @@ They reference underlying arrays.
 
 This is one of the most important Go concepts.
 
+Internally the slice is roughly this:
+```go
+type slice struct {
+    ptr *array
+    len int
+    cap int
+}
+```
+
 ---
 
 ## Slicing Does Not Copy
