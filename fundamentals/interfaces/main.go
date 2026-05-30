@@ -37,4 +37,10 @@ func main() {
 
 	announce(dog)
 	announce(human)
+
+	fmt.Println("\n=== Logger Example ===")
+	loggerExample()
+
+	fmt.Println("\n=== Interface Composition Example ===")
+	compositionExample()
 }
