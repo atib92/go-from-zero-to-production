@@ -10,6 +10,12 @@ To modify a string:
 2. Modify runes
 3. Convert back to string
 
+```go
+runes := []rune("hello")
+runes[0] = 'H'
+str := string(runes)
+```
+
 ---
 
 ## len() Counts Bytes
@@ -49,15 +55,37 @@ This is usually the correct way to iterate over user-facing text.
 ## Bytes vs Characters
 
 A string is fundamentally bytes.
-
 Characters are represented by runes.
-
 This distinction becomes important when handling Unicode text.
+
+## Runes
+A rune is a
+```go
+type rune = int32
+```
+and represents a unicode code point.
+
+## Summary of bytes, charecters, unicode and runes
+Strings are UTF-8 encoded bytes.
+A rune represents a Unicode code point.
+A rune may be encoded using 1-4 bytes in UTF-8.
+In our chinese text example, each rune was encoded in 3 bytes.
 
 ---
 
 ## strings.Builder Exists For Performance
 
 Repeated string concatenation can create many allocations.
-
-Builder provides a more efficient way to construct large strings.
+```go
+var builder strings.Builder
+builder.WriteString("Hello ")
+builder.WriteString("Go")
+fmt.Println(builder.String())
+```
+Builder provides a more efficient way to construct large strings. Very common in production code.
+```go
+result := ""
+for i := 0; i < 10000; i++ {
+	result += "a"
+}
+```

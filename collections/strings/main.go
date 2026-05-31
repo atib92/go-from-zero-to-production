@@ -21,7 +21,7 @@ func main() {
 	fmt.Println(greeting)
 
 	// Strings Are Immutable
-	str := "Go"
+	str := "AB"
 
 	// str[0] = 'g' // Compile Error
 
@@ -32,6 +32,13 @@ func main() {
 
 	for i := 0; i < len(str); i++ {
 		fmt.Printf("%c -> %d\n", str[i], str[i])
+	}
+
+	for index, r := range str {
+		fmt.Printf("index=%d rune=%c codepoint=%d\n",
+			index,
+			r,
+			r)
 	}
 
 	// Unicode Example
@@ -58,4 +65,10 @@ func main() {
 	fmt.Println(strings.ToUpper(name))
 	fmt.Println(strings.Contains(name, "ti"))
 	fmt.Println(strings.ReplaceAll(name, "Atib", "John"))
+
+	// String Builder examples
+	var builder strings.Builder
+	builder.WriteString("Hello ")
+	builder.WriteString("Go")
+	fmt.Println(builder.String())
 }
