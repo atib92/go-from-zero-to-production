@@ -565,3 +565,184 @@ while passing an object.
 ```
 
 Neither side can complete the exchange without the other.
+
+
+## Very Important Insight: Channels Are Not Just Queues
+
+Coming from Python, it is tempting to think of a Go channel as being similar to:
+
+```python
+asyncio.Queue()
+```
+
+or a message broker such as:
+
+- Kafka
+- RabbitMQ
+- Google PubSub
+
+However, this comparison can be misleading, especially for **unbuffered channels**.
+
+---
+
+### Python Queue Mental Model
+
+A typical queue behaves like:
+
+```text
+Producer
+    ↓
+Queue
+    ↓
+Consumer
+```
+
+The queue stores messages.
+
+This allows:
+
+- Producer to run ahead
+- Consumer to process later
+- Producer and consumer to be largely independent
+
+The queue acts as a decoupling mechanism.
+
+---
+
+### Unbuffered Channel Mental Model
+
+An unbuffered channel:
+
+```go
+ch := make(chan int)
+```
+
+is better thought of as:
+
+```text
+Producer
+    ↓
+Handshake
+    ↓
+Consumer
+```
+
+There is effectively:
+
+```text
+No storage
+```
+
+(or more precisely, a buffer size of zero).
+
+For a send operation:
+
+```go
+ch <- value
+```
+
+to complete, a receiver must be ready:
+
+```go
+value := <-ch
+```
+
+Likewise, a receiver cannot proceed until a sender provides a value.
+
+This means:
+
+```text
+Data transfer
++
+Execution synchronization
+```
+
+happen at the same time.
+
+---
+
+### Why This Matters
+
+An unbuffered channel is not merely transporting data.
+
+It is also synchronizing goroutines.
+
+After:
+
+```go
+ch <- value
+```
+
+the sender knows:
+
+```text
+A receiver accepted the value.
+```
+
+After:
+
+```go
+value := <-ch
+```
+
+the receiver knows:
+
+```text
+A sender provided the value.
+```
+
+This makes channels much more than a simple queue.
+
+---
+
+### Buffered Channels
+
+A buffered channel:
+
+```go
+ch := make(chan int, 100)
+```
+
+behaves more like a queue:
+
+```text
+Producer
+    ↓
+Buffer
+    ↓
+Consumer
+```
+
+The producer can run ahead until the buffer fills.
+
+The consumer can lag behind and process values later.
+
+This begins to resemble Python's:
+
+```python
+asyncio.Queue(maxsize=100)
+```
+
+although channels are still fundamentally designed for communication and synchronization.
+
+---
+
+### Personal Mental Model
+
+A useful way to think about concurrency primitives:
+
+```text
+Unbuffered Channel
+    =
+    Synchronous Communication
+
+Buffered Channel
+    =
+    Limited Asynchronous Communication
+
+Queue / Kafka / PubSub
+    =
+    Message Storage + Decoupling
+```
+
+This distinction helped clarify why producer and consumer must exist concurrently when using unbuffered channels.
