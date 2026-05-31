@@ -68,4 +68,11 @@ func main() {
 	fmt.Println("Counter:", count()) // 1
 	fmt.Println("Counter:", count()) // 2
 	fmt.Println("Counter:", count()) // 3
+
+	// This is an anonymous function that is immediately invoked
+	// Anonymous functions are useful for short-lived operations or when you want to create a function on the fly without naming it.
+	// Example usecases: 1. As a callback function, 2. To create a closure that captures variables from the surrounding scope, 3. To execute code in a separate goroutine.
+	func() {
+		fmt.Println("This is an anonymous function")
+	}()
 }
